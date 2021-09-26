@@ -11,12 +11,12 @@
 # ------------------------------------------------------------------------------
 # HOW TO USE: run this script in the directory that holds the week's assignments
 # ------------------------------------------------------------------------------
-# bash <path-to-this-script> <project|checkpoint-name> <path-to-student-records-csv>
+# $ bash <path-to-this-script> <project|checkpoint-name> <path-to-student-records-csv>
 # 
 # --------
 # EXAMPLE:
 # --------
-# bash ./grade.sh "Checkpoint.DOM" "/Users/myname/Documents/fullstack-academy/my-cohort/students.csv"
+# $ bash ./grade.sh "Checkpoint.DOM" "/Users/myname/Documents/fullstack-academy/my-cohort/students.csv"
 #####################################################################################################
 
 # repo name as cli input param, ex "Checkpoint.DOM"
