@@ -9,7 +9,7 @@
 # $ chmod +x grade.sh
 # 
 # ------------------------------------------------------------------------------
-# HOW TO USE: run this script in the directory that holds the week's assingments
+# HOW TO USE: run this script in the directory that holds the week's assignments
 # ------------------------------------------------------------------------------
 # bash <path-to-this-script> <project|checkpoint-name> <path-to-student-records-csv>
 # 
