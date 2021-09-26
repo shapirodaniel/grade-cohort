@@ -21,20 +21,26 @@
 
 # repo name as cli input param, ex "Checkpoint.DOM"
 project_name=$1
-
 # csv student list structured name,email,github
 path_to_students_csv=$2
+grades_dir="$project_name-grades"
 
 # create 'project-name-grades' directory if not already exists and set location
-exists=$(mkdir "$project_name-grades")
-cd "$project_name-grades"
+if [ -d "$grades_dir" ] 
+then 
+    printf ">>>> $grades_dir already exists, skipping directory creation\n"
+else    
+    mkdir "$grades_dir"
+fi
+
+cd "./$grades_dir"
 
 # load csv and parse header
-printf "reading $path_to_students_csv"
+printf ">>>> reading $path_to_students_csv\n"
 exec < $path_to_students_csv || exit 1
-printf "parsing header"
+printf ">>>> parsing header\n"
 read header
-printf "structure of csv records: $header"
+printf ">>>> structure of csv records: $header\n"
 
 # loop all student records and parse name, email, github
 while IFS="," 
@@ -46,7 +52,7 @@ do
     # clone records and add "grade" branch, skipping any records that already exist
     if [ -d "$name" ]
     then
-        printf "$name's project has already been cloned"
+        printf ">>> $name's project has already been cloned\n"
     else
         # clone project to project directory and create "grade" branch
         printf "cloning $github ($name)'s project and creating branch 'grade'"
