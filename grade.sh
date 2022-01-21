@@ -35,6 +35,8 @@ fi
 
 cd "./$grades_dir"
 
+touch "$project_name-grades.csv"
+
 # load csv and parse header
 printf ">>>> reading $path_to_students_csv\n"
 exec < $path_to_students_csv || exit 1
@@ -59,6 +61,16 @@ do
         git clone git@github.com:$github/$project_name.git $name
         cd $name
         git checkout -b "grade"
+
+        # calculate grade via test runner
+        npm i
+        npm i jest
+        npx npm-add-script -k "test:jest" -v "jest --outputFile=jest-output.json --json --testFailureExitCode=0"
+        npm run test:jest
+        num_passed_tests=$(jq '.numPassedTests' jest-output.json)
+        num_total_tests=$(jq '.numTotalTests' jest-output.json)
+        grade=$(echo "scale=3; $num_passed_tests / $num_total_tests" | bc)
+        echo "$name,$project_name,$grade" >> "$project_name-grades.csv"
         cd ..
     fi
 done
