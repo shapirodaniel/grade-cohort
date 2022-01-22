@@ -35,7 +35,9 @@ fi
 
 cd "./$grades_dir"
 
-touch "$project_name-grades.csv"
+grades_csv="$project_name-grades.csv"
+touch $grades_csv
+echo "name,project_name,grade,submitted_at" >> $grades_csv
 
 # load csv and parse header
 printf ">>>> reading $path_to_students_csv\n"
@@ -61,15 +63,27 @@ do
         git clone git@github.com:$github/$project_name.git $name
         cd $name
         git checkout -b "grade"
+        
+        # get commit and timestamp
+        sha=$(git rev-parse --verify HEAD)
+        submitted_at=$(git show -s --format=%ct $sha)
 
-        # calculate grade via test runner
+        # install deps
         cp ../../reporter.js ./reporter.js
         npm i
-        npm config set filename script_test.js
-        npx npm-add-script -k "test:mocha" -v "mocha script_test.js -R ./reporter.js"
+
+        # set test target, add mocha reporter
+        npm config set submitted_at $submitted_at
+        npx npm-add-script -k "test:mocha" -v "mocha '{,!(node_modules)/**/}*test*.js' -R ./reporter.js"
         npm run test:mocha
-        grade=$(scale=3; jq '.grade' grade.json | bc)
-        echo "$name,$project_name,$grade" >> "../$project_name-grades.csv"
+
+        # calculate grade, timestamp of last commit
+        grade=$(jq '.grade' grade.json | bc)
+        submitted_at=$(jq '.submitted_at' grade.json)
+        
+        # write grade to file
+        echo "$name,$github,$project_name,$grade,$submitted_at" >> "../$grades_csv"
+        
         cd ..
     fi
 done
