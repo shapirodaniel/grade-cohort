@@ -76,8 +76,9 @@ do
     npm i
 
     # get submission date, test json
+    # adds babel-polyfill, babel-register to handle es6 modules for Redux checkpoint
     npm config set submitted_at $submitted_at
-    npx npm-add-script -k "test:mocha" -v "mocha \"*test*.js\" \"!{,node_modules/**/}**/*.js\" \"./test/**/*.js\" \"./tests/**/*.js\" -R ./mocha-reporter.js"
+    npx npm-add-script -k "test:mocha" -v "mocha \"*test*.js\" \"!{,node_modules/**/}**/*.js\" \"./test/**/*.js\" \"./tests/**/*.js\" -R ./mocha-reporter.js $([[ $project_name == *"Redux"* ]] && echo "--require babel-polyfill --require babel-register")"
     npm run test:mocha
 
     # calculate grade, timestamp of last commit
