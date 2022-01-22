@@ -3,6 +3,12 @@
 #######################################################################################################
 # This script allows you to clone an entire cohort's weekly checkpoint for grading
 # 
+# ----------------------------------------------------------
+# DEPENDENCIES: jq (https://stedolan.github.io/jq/download/) 
+# ----------------------------------------------------------
+# 
+# macOS: brew install jq | windows: choco install jq | linux: sudo apt-get install jq
+# 
 # ----------------------------------------------------------------------------------
 # NOTE: to run this script, execute the following shell command to grant permissions
 # ----------------------------------------------------------------------------------

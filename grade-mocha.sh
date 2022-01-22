@@ -3,11 +3,6 @@
 #######################################################################################################
 # This script allows you to clone an entire cohort's weekly checkpoint for grading
 # 
-# -------------
-# DEPENDENCIES: 
-# -------------
-# jq (https://stedolan.github.io/jq/download/)
-# 
 # ----------------------------------------------------------------------------------
 # NOTE: to run this script, execute the following shell command to grant permissions
 # ----------------------------------------------------------------------------------
@@ -36,7 +31,7 @@ grades_dir="$project_name-grades"
 # create 'project-name-grades' directory if not already exists and set location
 if [ -d "$grades_dir" ] 
 then 
-    printf ">>>> $grades_dir already exists, skipping directory creation\n"
+    printf "$grades_dir already exists, skipping directory creation\n"
 else    
     mkdir "$grades_dir"
 fi
@@ -50,11 +45,11 @@ grades_header="name,project_name,grade,submitted_at"
 cat "./$grades_csv" | grep "$grades_header" || echo $grades_header >> $grades_csv
 
 # load students csv and parse header
-printf ">>>> reading $path_to_students_csv\n"
+printf "reading $path_to_students_csv\n"
 exec < $path_to_students_csv || exit 1
-printf ">>>> parsing header\n"
+printf "parsing header\n"
 read header
-printf ">>>> structure of csv records: $header\n"
+printf "structure of csv records: $header\n"
 
 # loop all student records and parse name, email, github
 while IFS="," 
@@ -67,7 +62,7 @@ do
     [ -d "$name" ] && rm -rf "$name"
 
     # clone project to project directory and create "grade" branch
-    printf "cloning $github ($name)'s project and creating branch 'grade'"
+    printf "cloning $github ($name)'s project and creating branch 'grade'\n"
     git clone git@github.com:$github/$project_name.git $name
     cd $name
     git checkout -b "grade"
@@ -77,12 +72,12 @@ do
     submitted_at=$(git show -s --format=%ct $sha)
 
     # copy mocha reporter instance into project directory and install deps
-    cp ../../reporter.js ./reporter.js
+    cp ../../mocha-reporter.js ./mocha-reporter.js
     npm i
 
-    # set test target, add mocha reporter and glob matcher for all *test*
+    # get submission date, test json
     npm config set submitted_at $submitted_at
-    npx npm-add-script -k "test:mocha" -v "mocha '{,!(node_modules)/**/}*test*.js' -R ./reporter.js"
+    npx npm-add-script -k "test:mocha" -v "mocha \"*test*.js\" \"!{,node_modules/**/}**/*.js\" \"./test/**/*.js\" \"./tests/**/*.js\" -R ./mocha-reporter.js"
     npm run test:mocha
 
     # calculate grade, timestamp of last commit
