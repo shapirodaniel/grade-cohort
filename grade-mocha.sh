@@ -3,10 +3,16 @@
 #######################################################################################################
 # This script allows you to clone an entire cohort's weekly checkpoint for grading
 # 
+# ----------------------------------------------------------
+# DEPENDENCIES: jq (https://stedolan.github.io/jq/download/) 
+# ----------------------------------------------------------
+# 
+# macOS: brew install jq | windows: choco install jq | linux: sudo apt-get install jq
+# 
 # ----------------------------------------------------------------------------------
 # NOTE: to run this script, execute the following shell command to grant permissions
 # ----------------------------------------------------------------------------------
-# $ chmod +x grade.sh
+# $ chmod +x grade-mocha.sh
 # 
 # ------------------------------------------------------------------------------
 # HOW TO USE: run this script in the directory that holds the week's assignments
@@ -16,7 +22,7 @@
 # --------
 # EXAMPLE:
 # --------
-# $ bash ./grade.sh "Checkpoint.DOM" "/Users/myname/Documents/fullstack-academy/my-cohort/students.csv"
+# $ bash ./grade-mocha.sh "Checkpoint.DOM" "$(pwd)/my-cohort/students.csv"
 #######################################################################################################
 
 # repo name as cli input param, ex "Checkpoint.DOM"
@@ -82,11 +88,19 @@ do
     npm run test:mocha
 
     # calculate grade, timestamp of last commit
-    grade=$(jq '.grade' grade.json | bc)
+    grade=$(jq '.grade' grade.json)
     submitted_at=$(jq '.submitted_at' grade.json)
+
+    # csv entry
+    csv_entry="$name,$github,$project_name,$grade,$submitted_at"
     
-    # write grade to file
-    cat "../$grades_csv" | grep $github || echo "$name,$github,$project_name,$grade,$submitted_at" >> "../$grades_csv"
+    # write grade to file, replacing already-graded entries
+    if cat "../$grades_csv" | grep -q "$github";
+    then
+        sed -i '' 's#.*'"$github"'.*#'"$csv_entry"'#' "../$grades_csv"
+    else
+        echo "$csv_entry" >> "../$grades_csv"
+    fi
 
     cd ..
 done
