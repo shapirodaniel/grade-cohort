@@ -70,6 +70,7 @@ do
     # clone project to project directory and create "grade" branch
     printf "cloning $github ($name)'s project and creating branch 'grade'\n"
     git clone git@github.com:$github/$project_name.git $name
+    [ ! -d "$name" ] && continue # hop out if repo didn't exist
     cd $name
     git checkout -b "grade"
     
@@ -95,12 +96,14 @@ do
     csv_entry="$name,$github,$project_name,$grade,$submitted_at"
     
     # write grade to file, replacing already-graded entries
-    if cat "../$grades_csv" | grep -q "$github";
-    then
-        sed -i '' 's#.*'"$github"'.*#'"$csv_entry"'#' "../$grades_csv"
-    else
-        echo "$csv_entry" >> "../$grades_csv"
-    fi
+    # if cat "../$grades_csv" | grep -q "$github";
+    # then
+    #     sed -i '' 's#.*'"$github"'.*#'"$csv_entry"'#' "../$grades_csv"
+    # else
+    #     echo "$csv_entry" >> "../$grades_csv"
+    # fi
+
+    echo "$csv_entry" >> "../$grades_csv"
 
     cd ..
 done
