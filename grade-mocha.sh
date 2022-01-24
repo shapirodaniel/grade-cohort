@@ -96,14 +96,12 @@ do
     csv_entry="$name,$github,$project_name,$grade,$submitted_at"
     
     # write grade to file, replacing already-graded entries
-    # if cat "../$grades_csv" | grep -q "$github";
-    # then
-    #     sed -i '' 's#.*'"$github"'.*#'"$csv_entry"'#' "../$grades_csv"
-    # else
-    #     echo "$csv_entry" >> "../$grades_csv"
-    # fi
-
-    echo "$csv_entry" >> "../$grades_csv"
+    if cat "../$grades_csv" | grep -q "$github";
+    then
+        sed -i '' 's#.*'"$github"'.*#'"$csv_entry"'#' "../$grades_csv"
+    else
+        echo "$csv_entry" >> "../$grades_csv"
+    fi
 
     cd ..
 done
